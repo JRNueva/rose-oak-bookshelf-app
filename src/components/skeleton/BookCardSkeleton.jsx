@@ -4,11 +4,11 @@ export default function BookCardSkeleton() {
   return (
     <Skeleton 
       variant="rectangular" 
-      width={160} 
-      height={240} 
+      width="160px" 
+      height="240px" 
       sx={{ 
         borderRadius: "12px",
-        backgroundColor: "rgba(0,0,0,0.1)"
+        bgcolor: 'action.hover'
       }} 
     />
   );

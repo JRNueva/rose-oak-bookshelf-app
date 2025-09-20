@@ -1,18 +1,21 @@
 import { Divider, Typography, Container, Box } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import BookDisplay from "../components/books-component/BookDisplay";
 
 import { getTrendingBooks, getPopularFiction, getScienceTech, getHistoryBiography } from "../api/bookService";
 
 const Section = ({ title, books, isFirst, loading, skeletonCount = 6 }) => {
-  const skeletonBooks = Array.from({ length: skeletonCount }, (_, index) => ({ id: `skeleton-${index}` }));
+  const skeletonBooks = useMemo(() => 
+    Array.from({ length: skeletonCount }, (_, index) => ({ id: `skeleton-${index}` })), 
+    [skeletonCount]
+  );
   
   return (
     <Box>
       <Typography variant={isFirst ? "h4" : "h5"} component={isFirst ? "h1" : "h2"} sx={{ mb: 2, color: 'primary.main', fontWeight: '600' }}>
         {title}
       </Typography>
-      <Divider sx={{ my: 5 }} />
+      <Divider sx={{ mt: 3, mb: 5 }} />
       <BookDisplay books={loading ? skeletonBooks : books} loading={loading} />
     </Box>
   );
@@ -51,12 +54,12 @@ export default function TrendingPage(){
   fetchBooks();
 }, []);
 
-  const sections = [
+  const sections = useMemo(() => [
     { title: "Trending Books Today", books: booksData.trending, skeletonCount: 12 },
     { title: "Popular Fiction", books: booksData.fiction, skeletonCount: 6 },
     { title: "Science & Technology", books: booksData.science, skeletonCount: 6 },
     { title: "History & Biography", books: booksData.history, skeletonCount: 6 }
-  ];
+  ], [booksData]);
 
   return <Container maxWidth="lg" sx={{ my: 18 }}>
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

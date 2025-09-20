@@ -1,3 +1,2 @@
-export default function AboutMePage(){
-    
+export default function AboutMePage() {
 }

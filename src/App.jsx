@@ -7,7 +7,7 @@ export default function App({ isDarkMode, setIsDarkMode }) {
   return (
     <Router>
       <Navbar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-      <AppRoutes />
+      <AppRoutes isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
     </Router>
   );
 }

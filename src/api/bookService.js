@@ -23,7 +23,7 @@ const formatBookData = (books, isTrending = false) => {
     title: book.title || 'Unknown Title',
     author: book.author_name?.[0] || 'Unknown Author',
     published: book.first_publish_year || book.publish_year?.[0] || 'Unknown',
-    rating: (4 + Math.random()).toFixed(1),
+    rating: (4 + (book.key ? book.key.charCodeAt(book.key.length - 1) % 10 / 10 : 0.5)).toFixed(1),
     subjects: (book.subject || []).slice(0, 5),
     description: 'No description available.',
     ...(isTrending && { trendPosition: index + 1 }),
@@ -66,20 +66,19 @@ export const getBookDetails = async (bookKey) => {
 export const getBookCover = (coverId, size = 'L') => 
   `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`;
 
-// Subject cycling index
-let currentSubjectIndex = 0;
-
-// Get next subject in cycle
-export const getNextSubject = () => {
-  const subject = subjects[currentSubjectIndex];
-  currentSubjectIndex = (currentSubjectIndex + 1) % subjects.length;
-  return subject;
+const createSubjectCycler = () => {
+  let index = 0;
+  return () => {
+    const subject = subjects[index];
+    index = (index + 1) % subjects.length;
+    return subject;
+  };
 };
 
-// Trending page sections
+const getNextSubject = createSubjectCycler();
+
 export const getPopularFiction = () => getSubjectBooks('fiction', 6);
 export const getScienceTech = () => getSubjectBooks('science', 6);
 export const getHistoryBiography = () => getSubjectBooks('history', 6);
 
-// Random page books - cycles through subjects
 export const getRandomBooks = () => getSubjectBooks(getNextSubject(), 12);

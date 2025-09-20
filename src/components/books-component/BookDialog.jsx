@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Typography, Chip, Rating } from "@mui/material";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Typography, Chip, Rating, Skeleton } from "@mui/material";
 import { TrendingUp, Close } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { getBookDetails } from "../../api/bookService";
-import { CoverImageSkeleton, SubjectsSkeleton, DescriptionSkeleton } from "../skeleton/DialogSkeletons";
+import { CoverImageSkeleton, SubjectsSkeleton, DescriptionSkeleton } from "../skeleton/DialogSkeleton";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -50,21 +50,30 @@ export default function BookDialog({ open, onClose, book }) {
     }
   }, [open]);
 
-  const description = typeof bookDetails?.description === 'string' 
-    ? bookDetails.description 
-    : bookDetails?.description?.value 
-    || book?.description 
-    || "No description available for this book.";
+  const getBookDescription = (bookDetails, book) => {
+    if (typeof bookDetails?.description === 'string') return bookDetails.description;
+    if (book?.description) return book.description;
+    return "No description available for this book.";
+  };
+
+  const description = getBookDescription(bookDetails, book);
   const subjects = bookDetails?.subjects || book?.subjects || [];
+
+  const lineHeight = useMemo(() => {
+    if (descriptionRef.current) {
+      const computed = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
+      return isNaN(computed) ? 24 : computed;
+    }
+    return 24;
+  }, []);
 
   useEffect(() => {
     if (descriptionRef.current && !loading) {
       const element = descriptionRef.current;
-      const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
       const maxHeight = lineHeight * 4;
       setNeedsReadMore(element.scrollHeight > maxHeight);
     }
-  }, [description, loading]);
+  }, [description, loading, lineHeight]);
 
   return (
     <StyledDialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -97,11 +106,13 @@ export default function BookDialog({ open, onClose, book }) {
             )}
             {!imageLoaded && book?.coverImage && <CoverImageSkeleton />}
             {book?.coverImage && (
-              <img 
-                src={book.coverImage} 
+              <Box
+                component="img"
+                src={book.coverImage}
                 alt={book.title}
                 onLoad={() => setImageLoaded(true)}
-                style={{
+                onError={() => setImageLoaded(true)}
+                sx={{
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
@@ -122,22 +133,31 @@ export default function BookDialog({ open, onClose, book }) {
             <Typography variant="body2" sx={{ ...detailTextSx, mb: 2 }}>Published: {book?.published || "2000"}</Typography>
             
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-              <Rating 
-                value={parseFloat(book?.rating || "4.5")} 
-                readOnly 
-                precision={0.1}
-                sx={{ color: "primary.main" }}
-              />
-              <Typography variant="body2" sx={{ color: "text.primary" }}>
-                {book?.rating || "4.5"}
-              </Typography>
-              {book?.trendPosition && (
-                <Chip icon={<TrendingUp sx={{ fontSize: "0.8rem" }} />} label={`#${book.trendPosition}`}
-                  variant="outlined" size="small" sx={{
-                    ml: 1, borderColor: "primary.main", color: "primary.main",
-                    "& .MuiChip-icon": { color: "primary.main" }
-                  }}
-                />
+              {loading ? (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Skeleton variant="rectangular" width={120} height={24} sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }} />
+                  <Skeleton variant="text" width={30} height={20} sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }} />
+                </Box>
+              ) : (
+                <>
+                  <Rating 
+                    value={parseFloat(book?.rating || "4.5")} 
+                    readOnly 
+                    precision={0.1}
+                    sx={{ color: "primary.main" }}
+                  />
+                  <Typography variant="body2" sx={{ color: "text.primary" }}>
+                    {book?.rating || "4.5"}
+                  </Typography>
+                  {book?.trendPosition && (
+                    <Chip icon={<TrendingUp sx={{ fontSize: "0.8rem" }} />} label={`#${book.trendPosition}`}
+                      variant="outlined" size="small" sx={{
+                        ml: 1, borderColor: "primary.main", color: "primary.main",
+                        "& .MuiChip-icon": { color: "primary.main" }
+                      }}
+                    />
+                  )}
+                </>
               )}
             </Box>
             
@@ -185,7 +205,7 @@ export default function BookDialog({ open, onClose, book }) {
             </Typography>
             {needsReadMore && (
               <Button onClick={() => setShowFullDescription(!showFullDescription)} sx={{
-                p: 0, minWidth: "auto", color: "primary.main", textTransform: "none", fontSize: "0.875rem", fontWeight: 500
+                p: 0, minWidth: "auto", color: "primary.main", textTransform: "none", fontSize: "0.875rem", fontWeight: 500, textDecoration: "underline"
               }}>
                 {showFullDescription ? "Read Less" : "Read More"}
               </Button>

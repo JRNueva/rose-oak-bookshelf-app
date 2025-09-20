@@ -12,13 +12,12 @@ export default function BookDisplay({ books = [], loading = false, bookCount = 1
         lg: 'repeat(6, 1fr)'
       },
       mt: 5,
-      gap: '24px 16px',
-      justifyItems: 'center',
-      rowGap: 4
+      gap: '32px 16px',
+      justifyItems: 'center'
     }}>
       {books.length > 0 ? (
         books.map((book, index) => (
-          <BookCard key={book.id || index} book={book} loading={loading} />
+          <BookCard key={book.id || `book-${index}`} book={book} loading={loading} />
         ))
       ) : (
         Array.from({ length: bookCount }, (_, index) => (

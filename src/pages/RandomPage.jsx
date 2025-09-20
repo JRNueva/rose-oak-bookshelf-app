@@ -8,6 +8,7 @@ export default function RandomPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBooks, setShowBooks] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSurpriseMe = async () => {
     setLoading(true);
@@ -15,8 +16,10 @@ export default function RandomPage() {
     try {
       const result = await getRandomBooks();
       setBooks(result.data || []);
-    } catch (error) {
-      console.error('Failed to fetch random books:', error);
+      setError('');
+    } catch {
+      setError('Failed to fetch random books. Please try again.');
+      setBooks([]);
     } finally {
       setLoading(false);
     }
@@ -26,7 +29,7 @@ export default function RandomPage() {
     return (
       <Container maxWidth="lg" sx={{ py: 4, mt: 18 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-          <Typography variant="h4" sx={{ color: "#D4AF37", fontWeight: 600 }}>
+          <Typography variant="h4" sx={{ color: "primary.main", fontWeight: 600 }}>
             Random Books
           </Typography>
           <Button
@@ -34,16 +37,20 @@ export default function RandomPage() {
             endIcon={<Shuffle />}
             onClick={handleSurpriseMe}
             sx={{
-              borderColor: "#D4AF37",
-              color: "#D4AF37",
-
+              borderColor: "primary.main",
+              color: "primary.main",
               fontWeight: 500,
-              "&:hover": { borderColor: "#B8941F", color: "#B8941F" }
+              "&:hover": { borderColor: "primary.dark", color: "primary.dark" }
             }}
           >
             Surprise Me Again
           </Button>
         </Box>
+        {error && (
+          <Typography variant="body1" sx={{ color: 'error.main', textAlign: 'center', mb: 2 }}>
+            {error}
+          </Typography>
+        )}
         <BookDisplay books={books} loading={loading} />
       </Container>
     );
@@ -65,14 +72,14 @@ export default function RandomPage() {
       <Typography
         variant="h3"
         component="h1"
-        sx={{ color: "#D4AF37", fontWeight: 700, mb: 2 }}
+        sx={{ color: "primary.main", fontWeight: 700, mb: 2 }}
       >
         Random Book Discovery
       </Typography>
       <Typography
         variant="h6"
         component="h2"
-        sx={{ color: "#6B4C3B", fontWeight: 500, mb: 3 }}
+        sx={{ color: "text.secondary", fontWeight: 500, mb: 3 }}
       >
         Explore a new world of stories with every click
       </Typography>
@@ -80,10 +87,9 @@ export default function RandomPage() {
         variant="contained"
         endIcon={<Shuffle />}
         sx={{
-          backgroundColor: "#D4AF37",
-          color: "white",
-
-          "&:hover": { backgroundColor: "#B8941F" }
+          backgroundColor: "primary.main",
+          color: "background.paper",
+          "&:hover": { backgroundColor: "primary.dark" }
         }}
         onClick={handleSurpriseMe}
         disabled={loading}

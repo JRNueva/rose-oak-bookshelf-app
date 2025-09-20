@@ -9,6 +9,7 @@ export default function BrowsePage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSearch = async (query) => {
     if (!query.trim()) return;
@@ -18,8 +19,10 @@ export default function BrowsePage() {
     try {
       const result = await searchBooks(query);
       setBooks(result.data || []);
-    } catch (error) {
-      console.error('Failed to search books:', error);
+      setError('');
+    } catch {
+      setError('Failed to search books. Please try again.');
+      setBooks([]);
     } finally {
       setLoading(false);
     }
@@ -48,14 +51,14 @@ export default function BrowsePage() {
       <Typography
         variant="h3"
         component="h1"
-        sx={{ color: "#D4AF37", fontWeight: 700, mb: 2 }}
+        sx={{ color: "primary.main", fontWeight: 700, mb: 2 }}
       >
         Browse Books
       </Typography>
       <Typography
         variant="h6"
         component="h2"
-        sx={{ color: "#6B4C3B", fontWeight: 500, mb: 4 }}
+        sx={{ color: "text.secondary", fontWeight: 500, mb: 4 }}
       >
         Search through our vast collection of books
       </Typography>
@@ -66,35 +69,53 @@ export default function BrowsePage() {
         placeholder="Search for books, authors, or subjects..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         sx={{
           maxWidth: 600,
           mb: hasSearched ? 4 : 0,
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: "#D4AF37",
+              borderColor: "primary.main",
             },
             "&:hover fieldset": {
-              borderColor: "#B8941F",
+              borderColor: "primary.dark",
             },
             "&.Mui-focused fieldset": {
-              borderColor: "#D4AF37",
+              borderColor: "primary.main",
             },
           },
         }}
         InputProps={{
           startAdornment: (
-            <InputAdornment position="start">
-              <Search sx={{ color: "#D4AF37" }} />
-            </InputAdornment>
+            <InputAdor nment position="start">
+              <Search sx={{ color: "primary.main" }} />
+            </InputAdor>
           ),
         }}
       />
       
       {hasSearched && (
-        <Box sx={{ width: "100%", maxWidth: "lg" }}>
-          <BookDisplay books={books} loading={loading} />
-        </Box>
+        <Container maxWidth="lg" sx={{ width: "100%", textAlign: "left" }}>
+          {error && (
+            <Typography variant="body1" sx={{ color: 'error.main', textAlign: 'center', mt: 2 }}>
+              {error}
+            </Typography>
+          )}
+          {!loading && !error && books.length === 0 ? (
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: "text.secondary", 
+                textAlign: "center", 
+                mt: 4 
+              }}
+            >
+              No results found. Try a different search term.
+            </Typography>
+          ) : (
+            <BookDisplay books={books} loading={loading} />
+          )}
+        </Container>
       )}
     </Container>
   );

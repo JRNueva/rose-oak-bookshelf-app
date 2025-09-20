@@ -104,9 +104,9 @@ export default function BookCard({ book, loading = false }) {
               sx={{
                 fontSize: '0.6rem',
                 height: 20,
-                backgroundColor: 'rgba(249, 247, 241, 0.95)',
-                borderColor: '#D4AF37',
-                color: '#3E2C23'
+                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(223, 168, 87, 0.9)' : 'rgba(249, 247, 241, 0.95)',
+                borderColor: 'primary.main',
+                color: (theme) => theme.palette.mode === 'dark' ? '#141615' : '#3E2C23'
               }}
             />
           )}
