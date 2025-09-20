@@ -55,14 +55,30 @@ export default function BookCard({ book, loading = false }) {
         sx={{
           width: "100%",
           height: "100%",
-          backgroundColor: "#f0f0f0",
+          backgroundColor: book?.coverImage ? "#f0f0f0" : "#9e9e9e",
           backgroundImage: book?.coverImage ? `url(${book.coverImage})` : 'none',
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          position: "relative"
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
         }}
       >
+        {!book?.coverImage && (
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "white", 
+              fontWeight: 500,
+              textAlign: "center",
+              opacity: 0.8
+            }}
+          >
+            No Image
+          </Typography>
+        )}
 
         <Box sx={{
           position: "absolute",

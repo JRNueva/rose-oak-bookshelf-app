@@ -9,7 +9,7 @@ const Section = ({ title, books, isFirst, loading, skeletonCount = 6 }) => {
   
   return (
     <Box>
-      <Typography variant="h5" component={isFirst ? "h1" : "h2"} sx={{ mb: 2, fontFamily: 'var(--font-heading)', color: 'primary.main' }}>
+      <Typography variant={isFirst ? "h4" : "h5"} component={isFirst ? "h1" : "h2"} sx={{ mb: 2, color: 'primary.main', fontWeight: '600' }}>
         {title}
       </Typography>
       <Divider sx={{ my: 5 }} />

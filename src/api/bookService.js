@@ -1,16 +1,13 @@
 import axios from 'axios';
 
-// Base API URL
 const API = 'https://openlibrary.org';
 
-// Available subjects for cycling
 const subjects = [
   'fiction', 'science', 'history', 
   'mystery', 'romance', 'fantasy', 
   'biography', 'adventure', 'thriller', 
   'comedy', 'drama', 'poetry'];
 
-// Generic API call handler
 const apiCall = async (url, params) => {
   try {
     const response = await axios.get(url, { params });
@@ -20,7 +17,6 @@ const apiCall = async (url, params) => {
   }
 };
 
-// Format book data with required fields - NO API calls here
 const formatBookData = (books, isTrending = false) => {
   return books.map((book, index) => ({
     id: book.key || `book-${index}`,
@@ -35,7 +31,6 @@ const formatBookData = (books, isTrending = false) => {
   }));
 };
 
-// Get 12 trending books with formatted data
 export const getTrendingBooks = async () => {
   const result = await apiCall(`${API}/trending/daily.json`);
   if (result.data) {
@@ -44,7 +39,6 @@ export const getTrendingBooks = async () => {
   return result;
 };
 
-// Get books by subject with formatted data
 export const getSubjectBooks = async (subject, limit = 6) => {
   const result = await apiCall(`${API}/search.json`, { subject, limit });
   if (result.data) {
@@ -53,7 +47,6 @@ export const getSubjectBooks = async (subject, limit = 6) => {
   return result;
 };
 
-// Search books by query with formatted data
 export const searchBooks = async (query, limit = 24) => {
   const result = await apiCall(`${API}/search.json`, { q: query, limit });
   if (result.data) {
@@ -62,27 +55,31 @@ export const searchBooks = async (query, limit = 24) => {
   return result;
 };
 
-// Get individual book details - called only when dialog opens
 export const getBookDetails = async (bookKey) => {
   if (!bookKey) return { data: null, loading: false, error: 'No book key provided' };
   
-  // Handle works keys vs edition keys
   const url = bookKey.startsWith('/works/') ? `${API}${bookKey}.json` : `${API}/books/${bookKey}.json`;
   const result = await apiCall(url);
   return result;
 };
 
-// Generate book cover URL
 export const getBookCover = (coverId, size = 'L') => 
   `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`;
 
-// Get random subject from cycling array
-export const getRandomSubject = () => subjects[Math.floor(Math.random() * subjects.length)];
+// Subject cycling index
+let currentSubjectIndex = 0;
+
+// Get next subject in cycle
+export const getNextSubject = () => {
+  const subject = subjects[currentSubjectIndex];
+  currentSubjectIndex = (currentSubjectIndex + 1) % subjects.length;
+  return subject;
+};
 
 // Trending page sections
 export const getPopularFiction = () => getSubjectBooks('fiction', 6);
 export const getScienceTech = () => getSubjectBooks('science', 6);
 export const getHistoryBiography = () => getSubjectBooks('history', 6);
 
-// Random page books
-export const getRandomBooks = () => getSubjectBooks(getRandomSubject(), 12);
+// Random page books - cycles through subjects
+export const getRandomBooks = () => getSubjectBooks(getNextSubject(), 12);

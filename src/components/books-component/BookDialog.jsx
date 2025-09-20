@@ -16,8 +16,8 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   }
 }));
 
-const detailTextSx = { mb: 1, color: "text.secondary", fontFamily: "var(--font-body)" };
-const headingSx = { fontFamily: "var(--font-heading)", color: "primary.main" };
+const detailTextSx = { mb: 1, color: "text.secondary" };
+const headingSx = { color: "primary.main" };
 
 export default function BookDialog({ open, onClose, book }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -69,16 +69,32 @@ export default function BookDialog({ open, onClose, book }) {
   return (
     <StyledDialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1 }}>
-        <Typography variant="h5" sx={headingSx}>Book Details</Typography>
+        <Typography variant="h5" component="div" sx={headingSx}>Book Details</Typography>
         <IconButton onClick={onClose}><Close /></IconButton>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1 }}>
         <Box sx={{ display: "flex", gap: 4, mb: 3 }}>
           <Box sx={{
-            width: 190, height: 290, backgroundColor: "#F9F7F1", borderRadius: "8px", flexShrink: 0,
-            position: "relative", overflow: "hidden"
+            width: 190, height: 290, 
+            backgroundColor: book?.coverImage ? "#F9F7F1" : "#9e9e9e", 
+            borderRadius: "8px", flexShrink: 0,
+            position: "relative", overflow: "hidden",
+            display: "flex", alignItems: "center", justifyContent: "center"
           }}>
+            {!book?.coverImage && (
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: "white", 
+                  fontWeight: 500,
+                  textAlign: "center",
+                  opacity: 0.8
+                }}
+              >
+                No Image
+              </Typography>
+            )}
             {!imageLoaded && book?.coverImage && <CoverImageSkeleton />}
             {book?.coverImage && (
               <img 
@@ -99,7 +115,7 @@ export default function BookDialog({ open, onClose, book }) {
             )}
           </Box>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ ...headingSx, mb: 1, color: "text.primary" }}>
+            <Typography variant="h6" component="div" sx={{ ...headingSx, mb: 1, color: "text.primary" }}>
               {book?.title || "Book Title"}
             </Typography>
             <Typography variant="body2" sx={detailTextSx}>Author: {book?.author || "Author Name"}</Typography>
@@ -112,14 +128,14 @@ export default function BookDialog({ open, onClose, book }) {
                 precision={0.1}
                 sx={{ color: "primary.main" }}
               />
-              <Typography variant="body2" sx={{ color: "text.primary", fontFamily: "var(--font-body)" }}>
+              <Typography variant="body2" sx={{ color: "text.primary" }}>
                 {book?.rating || "4.5"}
               </Typography>
               {book?.trendPosition && (
                 <Chip icon={<TrendingUp sx={{ fontSize: "0.8rem" }} />} label={`#${book.trendPosition}`}
                   variant="outlined" size="small" sx={{
                     ml: 1, borderColor: "primary.main", color: "primary.main",
-                    "& .MuiChip-icon": { color: "primary.main" }, fontFamily: "var(--font-body)"
+                    "& .MuiChip-icon": { color: "primary.main" }
                   }}
                 />
               )}
@@ -130,11 +146,11 @@ export default function BookDialog({ open, onClose, book }) {
             ) : (
               subjects && subjects.length > 0 && (
                 <Box>
-                  <Typography variant="subtitle2" sx={{ ...headingSx, mb: 1, fontSize: "0.875rem" }}>Subjects</Typography>
+                  <Typography variant="subtitle2" component="div" sx={{ ...headingSx, mb: 1, fontSize: "0.875rem" }}>Subjects</Typography>
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                     {subjects.slice(0, 5).map((subject, index) => (
                       <Chip key={index} label={subject} size="small" variant="outlined" sx={{
-                        borderColor: "primary.main", color: "text.primary", fontFamily: "var(--font-body)", fontSize: "0.75rem"
+                        borderColor: "primary.main", color: "text.primary", fontSize: "0.75rem"
                       }} />
                     ))}
                   </Box>
@@ -148,7 +164,7 @@ export default function BookDialog({ open, onClose, book }) {
           <DescriptionSkeleton />
         ) : (
           <Box>
-            <Typography variant="h6" sx={{ ...headingSx, mb: 2 }}>Description</Typography>
+            <Typography variant="h6" component="div" sx={{ ...headingSx, mb: 2 }}>Description</Typography>
             <Typography 
               ref={descriptionRef}
               variant="body2" 
@@ -156,7 +172,7 @@ export default function BookDialog({ open, onClose, book }) {
                 lineHeight: 1.6, 
                 color: "text.primary", 
                 mb: 1, 
-                fontFamily: "var(--font-body)",
+
                 ...(!showFullDescription && {
                   display: "-webkit-box",
                   WebkitLineClamp: 4,
