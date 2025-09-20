@@ -14,7 +14,10 @@ export default function ColorModeToggleButton({ isDarkMode, setIsDarkMode, ...pr
       color="inherit"
       {...props}
     >
-      {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
+      {isDarkMode
+        ? <LightModeIcon sx={{ color: '#fff' }} /> 
+        : <DarkModeIcon />
+      }
     </IconButton>
   );
 }

@@ -87,9 +87,9 @@ export default function BrowsePage() {
         }}
         InputProps={{
           startAdornment: (
-            <InputAdor nment position="start">
+            <InputAdornment position="start">
               <Search sx={{ color: "primary.main" }} />
-            </InputAdor>
+            </InputAdornment>
           ),
         }}
       />
