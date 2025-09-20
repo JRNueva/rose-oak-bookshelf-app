@@ -142,7 +142,7 @@ export default function Information() {
             <PhoneIcon sx={{ fontSize: '1.75rem' }} />
           </IconButton>
           <IconButton
-            href="https://linkedin.com/in/joannenueva"
+            href="https://www.linkedin.com/in/jrnueva/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
@@ -163,7 +163,7 @@ export default function Information() {
             <LinkedInIcon sx={{ fontSize: '1.75rem' }} />
           </IconButton>
           <IconButton
-            href="https://github.com/joannenueva"
+            href="https://github.com/JRNueva"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
