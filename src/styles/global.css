@@ -1,0 +1,9 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #2E2E2E; /* Light mode primary text */
+}
+
+h1, h2, h3 {
+  font-family: 'Merriweather', serif;
+  color: #D4AF37; /* Gold accent for titles */
+}
