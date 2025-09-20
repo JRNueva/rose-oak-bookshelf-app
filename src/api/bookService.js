@@ -3,8 +3,7 @@ import axios from 'axios';
 // Base API URL
 const API = 'https://openlibrary.org';
 
-// Add random rating (0-5) to each book
-const addRating = (books) => books.map(book => ({ ...book, rating: Math.floor(Math.random() * 6) }));
+
 
 // Available subjects for cycling
 const subjects = [
@@ -23,34 +22,53 @@ const apiCall = async (url, params) => {
   }
 };
 
-// Get 12 trending books with trend positions
+// Format book data with required fields
+const formatBookData = (books, isTrending = false) => {
+  return books.map((book, index) => ({
+    id: book.key || `book-${index}`,
+    title: book.title || 'Unknown Title',
+    author: book.author_name?.[0] || 'Unknown Author',
+    published: book.first_publish_year || book.publish_year?.[0] || 'Unknown',
+    rating: (4 + Math.random()).toFixed(1),
+    editionCount: book.edition_count || 1,
+    ...(isTrending && { trendPosition: index + 1 }),
+    coverImage: book.cover_i ? getBookCover(book.cover_i) : null
+  }));
+};
+
+// Get 12 trending books with formatted data
 export const getTrendingBooks = async () => {
   const result = await apiCall(`${API}/trending/daily.json`);
   if (result.data) {
-    const booksWithRating = addRating(result.data.works.slice(0, 12));
-    result.data = booksWithRating.map((book, index) => ({ ...book, trendPosition: index + 1 }));
+    result.data = formatBookData(result.data.works.slice(0, 12), true);
   }
   return result;
 };
 
-// Get books by subject with limit
+// Get books by subject with formatted data
 export const getSubjectBooks = async (subject, limit = 6) => {
   const result = await apiCall(`${API}/search.json`, { subject, limit });
-  if (result.data) result.data = addRating(result.data.docs);
+  if (result.data) {
+    result.data = formatBookData(result.data.docs.slice(0, limit));
+  }
   return result;
 };
 
-// Search books by query (max 24 for browse page)
+// Search books by query with formatted data
 export const searchBooks = async (query, limit = 24) => {
   const result = await apiCall(`${API}/search.json`, { q: query, limit });
-  if (result.data) result.data = addRating(result.data.docs);
+  if (result.data) {
+    result.data = formatBookData(result.data.docs.slice(0, limit));
+  }
   return result;
 };
 
 // Search books by subject
-export const searchBySubject = async (subject, limit = 10) => {
+export const searchBySubject = async (subject, limit = 6) => {
   const result = await apiCall(`${API}/search.json`, { subject, limit });
-  if (result.data) result.data = addRating(result.data.docs);
+  if (result.data) {
+    result.data = formatBookData(result.data.docs.slice(0, limit));
+  }
   return result;
 };
 
@@ -67,9 +85,9 @@ export const getBookCover = (coverId, size = 'L') =>
 export const getRandomSubject = () => subjects[Math.floor(Math.random() * subjects.length)];
 
 // Trending page sections
-export const getPopularFiction = () => getSubjectBooks('fiction', 6);
-export const getScienceTech = () => getSubjectBooks('science', 6);
-export const getHistoryBiography = () => getSubjectBooks('history', 6);
+export const getPopularFiction = () => getSubjectBooks('popular fiction', 6);
+export const getScienceTech = () => getSubjectBooks('science & technology', 6);
+export const getHistoryBiography = () => getSubjectBooks('history & biography', 6);
 
 // Random page books
 export const getRandomBooks = () => getSubjectBooks(getRandomSubject(), 12);
