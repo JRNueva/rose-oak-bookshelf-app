@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import BookCard from "./BookCard";
 
-export default function BookDisplay({ books = [], loading = false, bookCount = 12 }) {
+export default function BookDisplay({ books = [], loading = false, bookCount = 6 }) {
   return (
     <Box sx={{
       display: 'grid',
