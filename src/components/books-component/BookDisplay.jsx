@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import BookCard from "./BookCard";
 
-export default function BookDisplay({ books = [], bookCount = 6 }) {
+export default function BookDisplay({ books = [], loading = false, bookCount = 6 }) {
   return (
     <Box sx={{
       display: 'grid',
@@ -18,11 +18,11 @@ export default function BookDisplay({ books = [], bookCount = 6 }) {
     }}>
       {books.length > 0 ? (
         books.map((book, index) => (
-          <BookCard key={index} book={book} />
+          <BookCard key={book.id || index} book={book} loading={loading} />
         ))
       ) : (
         Array.from({ length: bookCount }, (_, index) => (
-          <BookCard key={index} />
+          <BookCard key={index} loading={true} />
         ))
       )}
     </Box>

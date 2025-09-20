@@ -3,8 +3,6 @@ import axios from 'axios';
 // Base API URL
 const API = 'https://openlibrary.org';
 
-
-
 // Available subjects for cycling
 const subjects = [
   'fiction', 'science', 'history', 
@@ -22,7 +20,7 @@ const apiCall = async (url, params) => {
   }
 };
 
-// Format book data with required fields
+// Format book data with required fields - NO API calls here
 const formatBookData = (books, isTrending = false) => {
   return books.map((book, index) => ({
     id: book.key || `book-${index}`,
@@ -30,7 +28,8 @@ const formatBookData = (books, isTrending = false) => {
     author: book.author_name?.[0] || 'Unknown Author',
     published: book.first_publish_year || book.publish_year?.[0] || 'Unknown',
     rating: (4 + Math.random()).toFixed(1),
-    editionCount: book.edition_count || 1,
+    subjects: (book.subject || []).slice(0, 5),
+    description: 'No description available.',
     ...(isTrending && { trendPosition: index + 1 }),
     coverImage: book.cover_i ? getBookCover(book.cover_i) : null
   }));
@@ -63,18 +62,14 @@ export const searchBooks = async (query, limit = 24) => {
   return result;
 };
 
-// Search books by subject
-export const searchBySubject = async (subject, limit = 6) => {
-  const result = await apiCall(`${API}/search.json`, { subject, limit });
-  if (result.data) {
-    result.data = formatBookData(result.data.docs.slice(0, limit));
-  }
-  return result;
-};
-
-// Get individual book details
+// Get individual book details - called only when dialog opens
 export const getBookDetails = async (bookKey) => {
-  return apiCall(`${API}${bookKey}.json`);
+  if (!bookKey) return { data: null, loading: false, error: 'No book key provided' };
+  
+  // Handle works keys vs edition keys
+  const url = bookKey.startsWith('/works/') ? `${API}${bookKey}.json` : `${API}/books/${bookKey}.json`;
+  const result = await apiCall(url);
+  return result;
 };
 
 // Generate book cover URL
@@ -85,9 +80,9 @@ export const getBookCover = (coverId, size = 'L') =>
 export const getRandomSubject = () => subjects[Math.floor(Math.random() * subjects.length)];
 
 // Trending page sections
-export const getPopularFiction = () => getSubjectBooks('popular fiction', 6);
-export const getScienceTech = () => getSubjectBooks('science & technology', 6);
-export const getHistoryBiography = () => getSubjectBooks('history & biography', 6);
+export const getPopularFiction = () => getSubjectBooks('fiction', 6);
+export const getScienceTech = () => getSubjectBooks('science', 6);
+export const getHistoryBiography = () => getSubjectBooks('history', 6);
 
 // Random page books
 export const getRandomBooks = () => getSubjectBooks(getRandomSubject(), 12);

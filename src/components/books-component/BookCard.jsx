@@ -3,6 +3,7 @@ import { Box, Card, Typography, styled, Chip } from "@mui/material";
 import { Star, TrendingUp } from "@mui/icons-material";
 import { keyframes } from "@mui/system";
 import BookDialog from "./BookDialog";
+import BookCardSkeleton from "../skeleton/BookCardSkeleton";
 
 const fadeIn = keyframes`
   from {
@@ -30,16 +31,22 @@ const StyledCard = styled(Card)(() => ({
   }
 }));
 
-export default function BookCard({ book }) {
+export default function BookCard({ book, loading = false }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleCardClick = () => {
-    setDialogOpen(true);
+    if (!loading) {
+      setDialogOpen(true);
+    }
   };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
+
+  if (loading) {
+    return <BookCardSkeleton />;
+  }
 
   return (
     <>
@@ -88,7 +95,7 @@ export default function BookCard({ book }) {
             />
           )}
           <Box sx={{ display: 'flex', alignItems: 'right', gap: 0.2, color: 'white' }}>
-            <Star sx={{ fontSize: '0.8rem', color: 'gold' }} />
+            <Star sx={{ fontSize: '1rem', color: '#FFD700' }} />
             <Typography variant="caption" sx={{ fontSize: '0.7rem', fontWeight: 600 }}>
               {book?.rating || "4.5"}
             </Typography>
@@ -131,14 +138,14 @@ export default function BookCard({ book }) {
             {book?.title || "Book Title"}
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            By {book?.author || "Author Name"}
+            {book?.author || "Author Name"}
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
-            Published on {book?.published || "2000"}
+            Published: {book?.published || "2000"}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
             <Typography variant="body2">
-              Rating {book?.rating || "4.5"} / 5
+              Ratings: {book?.rating || "4.5"}
             </Typography>
           </Box>
           <Typography 
@@ -150,7 +157,7 @@ export default function BookCard({ book }) {
               mt: 1
             }}
           >
-            Click to see more
+            Click to view details
           </Typography>
         </Box>
       </Box>
